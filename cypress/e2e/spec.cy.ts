@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { SetupWorker } from "msw/browser";
+// import { http, HttpResponse } from "../../node_modules/msw/lib/core";
 
 // Declare global (window) properties
 declare global {
@@ -8,6 +9,8 @@ declare global {
     msw: {
       worker: SetupWorker;
       ready: boolean;
+      http: typeof http;
+      HttpResponse: typeof HttpResponse;
     };
     cypressReady: boolean;
   }
@@ -22,8 +25,8 @@ describe("template spec", () => {
     cy.window().then((window) => {
       console.log("registering new handler");
       window.msw.worker.use(
-        http.get("/foo/bar", () => {
-          return HttpResponse.json({ response: "cypress override" });
+        window.msw.http.get("/foo/bar", () => {
+          return window.msw.HttpResponse.json({ source: "cypress override" });
         })
       );
 

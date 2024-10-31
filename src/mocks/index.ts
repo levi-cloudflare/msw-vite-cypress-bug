@@ -11,6 +11,8 @@ declare global {
     // mock service worker
     msw: {
       worker: SetupWorker;
+      http: typeof http;
+      HttpResponse: typeof HttpResponse;
     };
     mswReady: boolean;
     cypressReady: boolean;
@@ -21,8 +23,10 @@ declare global {
 const startWorker = async () => {
   const worker = setupWorker(handler);
 
-  await worker.start();
-  window.msw = { worker };
+  await worker.start({
+    onUnhandledRequest: "bypass",
+  });
+  window.msw = { worker, http, HttpResponse };
   window.mswReady = true;
 };
 
